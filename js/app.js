@@ -664,3 +664,14 @@ window.resetSpotUyData=()=>{ localStorage.removeItem(KEY); alert('Storage de Spo
   try{ (window.map||map)?.zoomControl?.setPosition('bottomright'); }catch(e){}
   refreshMapSize();
 })();
+// Compactar etiqueta en pantallas muy angostas
+(function compactCancelados(){
+  const btn = document.getElementById('btnCancelados');
+  if(!btn) return;
+  const full = 'Lista: incluir cancelados (OFF)';
+  const short = 'Cancelar (OFF)';
+  const mq = window.matchMedia('(max-width: 380px)');
+  const apply = () => { btn.textContent = mq.matches ? short : full; };
+  apply();
+  mq.addEventListener?.('change', apply);
+})();

@@ -777,3 +777,161 @@ html, body{
 @media (max-width: 767px){
   .toolbar .toolbar__wrap{ overflow: visible; }
 }
+/* ================= Toolbar ordenada sin overflow ================= */
+
+/* Los controles pueden encoger */
+.tool-control, .tool-btn { min-width: 0; }
+.tool-search { min-width: 0; width: 100%; }
+
+/* ----- Desktop / Tablet ancho (≥900px): 1 fila fija + chips debajo ----- */
+@media (min-width: 900px){
+  .toolbar .toolbar__wrap{
+    display: grid;
+    grid-template-columns: minmax(220px, 24rem) 1fr max-content max-content max-content;
+    gap: 12px;
+    align-items: center;
+    overflow: visible;
+  }
+
+  /* Fila 1 explícita */
+  #selDepto      { grid-column: 1; grid-row: 1; }
+  #txtBuscar     { grid-column: 2; grid-row: 1; }
+  #btnCancelados { grid-column: 3; grid-row: 1; white-space: nowrap; }
+  #selDiaMapa    { grid-column: 4; grid-row: 1; white-space: nowrap; }
+  #btnNuevo      { grid-column: 5; grid-row: 1; white-space: nowrap; }
+
+  /* Chips ocupan la fila 2 completa (si existen) */
+  #chipsCats{
+    grid-column: 1 / -1;
+    grid-row: 2;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+}
+
+/* ----- Tablet angosta (768–899px): 2 columnas limpias, sin overflow ----- */
+@media (min-width:768px) and (max-width: 899px){
+  .toolbar .toolbar__wrap{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    align-items: center;
+    overflow: visible;
+  }
+
+  /* Fila 1 */
+  #selDepto  { grid-column: 1; grid-row: 1; }
+  #txtBuscar { grid-column: 2; grid-row: 1; }
+
+  /* Fila 2 */
+  #btnCancelados { grid-column: 1; grid-row: 2; }
+  #selDiaMapa    { grid-column: 2; grid-row: 2; }
+
+  /* Fila 3 */
+  #btnNuevo  { grid-column: 1 / -1; grid-row: 3; }
+
+  /* Chips debajo si están */
+  #chipsCats{
+    grid-column: 1 / -1;
+    grid-row: 4;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+}
+
+/* Mobile (<768px) queda como ya lo tenés (apilado) */
+/* ============ MOBILE POLISH (≤ 640px) ============ */
+@media (max-width: 640px){
+  /* nada de scroll horizontal en móvil */
+  html, body { overflow-x: hidden; }
+
+  /* padding parejo en la barra */
+  .toolbar .wrap { padding-left: 16px; padding-right: 16px; }
+
+  /* grid limpio: 2 columnas */
+  .toolbar .toolbar__wrap{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    align-items: center;
+    overflow: visible;               /* evita scroll lateral del contenedor */
+  }
+
+  /* los controles pueden encoger y ocupan ancho total */
+  .tool-control, .tool-btn { min-width: 0; width: 100%; }
+  .tool-search { min-width: 0; width: 100%; }
+
+  /* fila 1: departamento, búsqueda */
+  #selDepto   { grid-column: 1 / -1; }
+  #txtBuscar  { grid-column: 1 / -1; }
+
+  /* fila 2: cancelados y día lado a lado */
+  #btnCancelados { grid-column: 1 / 2; white-space: normal; line-height: 1.15; font-size: 13px; padding: 10px 12px; }
+  #selDiaMapa    { grid-column: 2 / 3; }
+
+  /* fila 3: chips si los usás (ocupan ancho completo) */
+  #chipsCats{
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+  }
+
+  /* fila 4: CTA ancho completo */
+  #btnNuevo   { grid-column: 1 / -1; font-weight: 700; }
+
+  /* redondeos consistentes */
+  .tool-control, .tool-btn, #btnCancelados { border-radius: 12px; }
+}
+@media (max-width: 640px){
+  .layout{
+    display: flex;
+    flex-direction: column; /* mapa arriba, lista debajo */
+    height: auto;
+  }
+  #mapa{
+    order: -1;
+    height: 60vh;           /* 55–65 a gusto */
+    min-height: 280px;
+    border-radius: 16px;
+  }
+  .panel{
+    order: 0;
+    overflow: visible;      /* usa scroll normal de la página */
+    max-height: none;
+  }
+}
+@media (max-width: 640px){
+  .modal__card{
+    width: calc(100vw - 24px);
+    max-width: 560px;
+    margin: 12px auto;
+    border-radius: 14px;
+  }
+  /* filas dobles del formulario en dos columnas parejas */
+  .form__two{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .form .input, .form .select{ width: 100%; }
+}
+/* Título del evento a UNA SOLA FILA (full-width) */
+/* Funciona sin cambiar HTML usando :has() */
+.form__row.form__two:has(#evTitulo) > div{
+  grid-column: 1 / -1;     /* cada bloque ocupa las 2 columnas */
+}
+
+/* (opcional) un pelín de aire entre esas dos filas */
+.form__row.form__two:has(#evTitulo) > div + div{
+  margin-top: 6px;
+}
+
+/* Asegura ancho completo de los inputs dentro */
+#evTitulo,
+#evFecha,
+#evHora{
+  width: 100%;
+}
