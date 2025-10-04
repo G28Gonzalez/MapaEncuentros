@@ -649,3 +649,131 @@ html, body{
 .leaflet-bottom.leaflet-right{ margin: 8px; }
 /* Cursor cuando elegís ubicación en el mapa */
 .mapa--pick{ cursor: crosshair; }
+:root{
+  --topbar-h: 48px;   /* el JS los ajusta */
+  --toolbar-h: 44px;
+}
+
+/* ====== DESKTOP / TABLET landscape (≥ 900px): dashboard sin scroll ====== */
+@media (min-width: 900px){
+  html, body{ height:100%; overflow:hidden; }
+  .layout{ height: calc(100svh - var(--topbar-h) - var(--toolbar-h)); }
+  #mapa{ height:100%; }
+  .panel{ overflow:auto; }
+}
+
+/* ====== MOBILE / TABLET portrait (< 900px): una columna con scroll ====== */
+@media (max-width: 899px){
+  html, body{ height:auto; overflow:auto; }      /* vuelve el scroll normal */
+  .layout{ display:block; height:auto; }         /* apila: filtros → mapa → lista */
+
+  /* Mapa protagonista pero no pantalla completa */
+  #mapa{
+    height: 60vh;           /* subí/bajá 55–65 a gusto */
+    min-height: 280px;
+    border-radius: 16px;
+  }
+
+  /* La lista sigue debajo, sin overflow forzado */
+  .panel{ overflow:visible; max-height:none; }
+}
+
+/* Detalles útiles en todas las vistas */
+.leaflet-bottom.leaflet-right{ margin:8px; }
+.mapa--pick{ cursor: crosshair; }
+/* ====== MOBILE (< 900px): mapa ARRIBA, lista debajo con scroll de página ====== */
+@media (max-width: 899px){
+  /* Scroll normal en móviles */
+  html, body{
+    height: auto;
+    overflow: auto;
+  }
+
+  /* Apilamos en columna y reordenamos: mapa primero */
+  .layout{
+    display: flex;
+    flex-direction: column;  /* permite usar order */
+    height: auto;
+  }
+
+  /* MAPA primero */
+  #mapa{
+    order: -1;               /* 👈 lo sube arriba */
+    height: 60vh;            /* ajusta 55–65 a gusto */
+    min-height: 280px;
+    border-radius: 16px;
+  }
+
+  /* LISTA después (flujo normal) */
+  .panel{
+    order: 0;
+    overflow: visible;
+    max-height: none;
+  }
+}
+/* =================== Toolbar sin overflow y bien ordenada =================== */
+
+/* Elementos pueden encoger sin romper el layout */
+.tool-control, .tool-btn { min-width: 0; }
+.tool-search { min-width: 0; width: 100%; }
+
+/* ---------- Desktop / Tablet ancho (≥900px): 1 fila + chips abajo ---------- */
+@media (min-width: 900px){
+  .toolbar .toolbar__wrap{
+    display: grid;
+    grid-template-columns: 220px 1fr max-content max-content max-content;
+    gap: 12px;
+    align-items: center;
+    overflow: visible;        /* evita scroll lateral del contenedor */
+  }
+
+  /* Posiciones */
+  #selDepto      { grid-column: 1 / 2; }
+  #txtBuscar     { grid-column: 2 / 3; }
+  #btnCancelados { grid-column: 3 / 4; white-space: nowrap; }
+  #selDiaMapa    { grid-column: 4 / 5; white-space: nowrap; }
+  #btnNuevo      { grid-column: 5 / 6; white-space: nowrap; }
+
+  /* Chips ocupan la segunda línea completa (si los usás) */
+  #chipsCats{
+    grid-column: 1 / -1;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+}
+
+/* ---------- Tablet angosta (768–899px): 2 columnas limpias ---------- */
+@media (min-width:768px) and (max-width: 899px){
+  .toolbar .toolbar__wrap{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    align-items: center;
+    overflow: visible;
+  }
+
+  /* Fila 1 */
+  #selDepto   { grid-column: 1 / 2; }
+  #txtBuscar  { grid-column: 2 / 3; }
+
+  /* Fila 2 */
+  #btnCancelados { grid-column: 1 / 2; }
+  #selDiaMapa    { grid-column: 2 / 3; }
+
+  /* Fila 3 */
+  #btnNuevo   { grid-column: 1 / -1; }
+
+  /* Chips ocupan toda la fila si están */
+  #chipsCats{
+    grid-column: 1 / -1;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+}
+
+/* ---------- Mobile (<768px) ya lo tenés apilado; por si acaso ---------- */
+@media (max-width: 767px){
+  .toolbar .toolbar__wrap{ overflow: visible; }
+}

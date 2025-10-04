@@ -642,3 +642,25 @@ window.resetSpotUyData=()=>{ localStorage.removeItem(KEY); alert('Storage de Spo
   // Por si este archivo se inyecta después del load
   refreshMapSize();
 })();
+(function fixHeightsAndLeaflet(){
+  function setChromeHeights(){
+    const t = document.querySelector('.topbar')?.offsetHeight || 0;
+    const b = document.querySelector('.toolbar')?.offsetHeight || 0;
+    document.documentElement.style.setProperty('--topbar-h',  t + 'px');
+    document.documentElement.style.setProperty('--toolbar-h', b + 'px');
+  }
+  function refreshMapSize(){
+    setChromeHeights();
+    setTimeout(()=>{ try{ (window.map||window.MAP||map)?.invalidateSize?.(); }catch(e){} }, 0);
+  }
+  // eventos
+  const mq = window.matchMedia('(max-width: 899px)');
+  window.addEventListener('load', refreshMapSize);
+  window.addEventListener('resize', refreshMapSize);
+  window.addEventListener('orientationchange', refreshMapSize);
+  mq.addEventListener?.('change', refreshMapSize);
+  mq.addListener?.(refreshMapSize); // fallback
+  // asegúrate de colocar el zoom abajo-derecha una vez
+  try{ (window.map||map)?.zoomControl?.setPosition('bottomright'); }catch(e){}
+  refreshMapSize();
+})();
