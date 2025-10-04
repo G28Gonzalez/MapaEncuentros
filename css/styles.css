@@ -1,0 +1,436 @@
+/* =================== Variables y base =================== */
+:root{
+  --bg:#0f1116;
+  --panel:#151a21;
+  --bdr:#232833;
+  --txt:#e7eaf1;
+  --muted:#9aa3b2;
+  --accent:#4ea8de;
+
+  /* Colores por categoría/subcategoría */
+  --foto:#3b82f6;
+  --encuentro-comun:#ef4444;     /* rojo */
+  --encuentro-benefico:#22c55e;  /* verde */
+  --encuentro-legal:#a78bfa;     /* violeta */
+
+  /* Estados */
+  --cancel:#ef4444;
+  --ok:#22c55e;
+  --warn:#f59e0b;
+}
+
+*{ box-sizing:border-box; margin:0; padding:0; }
+body{ font-family:system-ui,Segoe UI,Roboto,Arial; background:var(--bg); color:var(--txt); }
+
+/* Desactivar ligaduras tipográficas globalmente (evita "L:enta") */
+body { font-variant-ligatures: none; font-feature-settings: "liga" 0, "clig" 0, "calt" 0, "dlig" 0; }
+
+
+/* =================== Cabecera =================== */
+.barra{
+  position:sticky; top:0; z-index:10;
+  display:flex; gap:12px; align-items:center; justify-content:space-between;
+  padding:12px 16px; background:rgba(15,17,22,.9); border-bottom:1px solid var(--bdr);
+  backdrop-filter: blur(6px);
+}
+.barra__logo{ font-weight:800; letter-spacing:.4px; }
+.barra__controles{ display:flex; gap:8px; flex-wrap:wrap; }
+
+.select, .input, .btn{
+  border:1px solid var(--bdr); background:#0b0e13; color:var(--txt);
+  padding:8px 10px; border-radius:10px; font-size:14px;
+}
+.btn{ border-color:var(--accent); cursor:pointer; }
+.btn:hover{ filter:brightness(1.12); }
+.btn--primary{ border-color:#7dd3fc; }
+
+/* =================== Chips =================== */
+.chips{ display:flex; gap:6px; flex-wrap:wrap; align-items:center; }
+.chip{
+  border:1px solid var(--bdr); background:#0b0e13; color:var(--muted);
+  padding:6px 10px; border-radius:999px; font-size:13px; cursor:pointer;
+}
+.chip--active{ color:var(--txt); border-color:var(--accent); }
+
+/* =================== Layout =================== */
+.layout{
+  display:grid; grid-template-columns: 360px 1fr; gap:12px;
+  padding:12px; height: calc(100dvh - 60px);
+}
+.panel{
+  background:var(--panel); border:1px solid var(--bdr); border-radius:14px; padding:12px;
+  overflow:auto;
+}
+.mapa{
+  border:1px solid var(--bdr); border-radius:14px; overflow:hidden;
+}
+.mapa--pick{ cursor: crosshair; }
+
+/* =================== Bloques / leyenda =================== */
+.bloque{
+  border:1px dashed var(--bdr); border-radius:12px; padding:10px; margin-bottom:12px;
+}
+.bloque__titulo{
+  font-size:13px; text-transform:uppercase; letter-spacing:.1em; color:var(--muted); margin-bottom:8px;
+}
+.legend{
+  display:flex; gap:12px; flex-wrap:wrap; align-items:center; margin-bottom:6px;
+}
+.dot{ display:inline-block; width:10px; height:10px; border-radius:50%; margin-right:6px; vertical-align:middle; }
+.dot--foto{ background:var(--foto); }
+.dot--encuentro-comun{ background:var(--encuentro-comun); }
+.dot--encuentro-benefico{ background:var(--encuentro-benefico); }
+.dot--encuentro-legal{ background:var(--encuentro-legal); }
+
+/* =================== Tarjetas de ubicación =================== */
+.ubicacion{
+  border:1px solid var(--bdr); border-radius:12px; padding:10px; margin-bottom:10px;
+}
+.ubicacion__head{
+  display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:8px;
+}
+.ubicacion__titulo{ font-weight:700; }
+.ubicacion__sub{ color:var(--muted); font-size:13px; }
+
+/* =================== Ítems de evento =================== */
+.item{
+  display:flex; align-items:center; justify-content:space-between; gap:10px;
+  padding:8px; border-radius:10px; border:1px solid #1e2330;
+}
+.item + .item{ margin-top:6px; }
+.item__main{ display:flex; flex-direction:column; gap:2px; }
+.item__fecha{ color:var(--muted); font-size:12px; }
+.item__titulo{ font-size:14px; }
+.item__titulo .dot{ margin-right:8px; }
+.item__acciones{ display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+
+/* ===== Badges ===== */
+.badge{
+  display:inline-flex; align-items:center;
+  padding:4px 10px; border-radius:999px; font-size:12px; font-weight:700;
+  border:1px solid var(--bdr); color:#cdd4df; background:#0b0e13;
+  line-height:1; white-space:nowrap;
+}
+.badge--cancel{ color:#fecaca; border-color:var(--cancel); }
+.badge--hoy{ color:#bbf7d0; border-color:var(--ok); }
+.badge--maniana{ color:#fde68a; border-color:var(--warn); }
+.badge--destacado{ border-color:#a78bfa; color:#c4b5fd; }
+
+a.link{ color:var(--accent); text-decoration:none; }
+a.link:hover{ text-decoration:underline; }
+.nota{ color:var(--muted); font-size:12px; margin-top:6px; }
+
+/* =================== Tip selección =================== */
+.tip{
+  position:fixed; right:16px; bottom:16px; z-index:4500;
+  border:1px solid var(--accent); background:#0b0e13; color:var(--txt);
+  padding:10px 12px; border-radius:12px; box-shadow:0 8px 30px rgba(0,0,0,.35);
+}
+
+/* =================== Modal =================== */
+.modal{ position:fixed; inset:0; display:none; z-index:5000; }
+.modal--open{ display:block; }
+.modal__backdrop{ position:absolute; inset:0; background:rgba(0,0,0,.55); }
+.modal__card{
+  position:relative; z-index:2; width:min(700px, 92vw);
+  margin:6vh auto; padding:16px; border-radius:14px; border:1px solid var(--bdr);
+  background:var(--panel); max-height:88vh; overflow:auto;
+}
+.modal__title{ margin-bottom:10px; }
+
+/* Formularios */
+.form{ display:flex; flex-direction:column; gap:10px; }
+.form__row{ display:flex; flex-direction:column; gap:6px; }
+.form__two{ display:grid; grid-template-columns: 1fr 1fr; gap:10px; }
+.label{ font-size:13px; color:var(--muted); }
+.check{ display:flex; align-items:center; gap:8px; font-size:14px; color:var(--muted); }
+.form__actions{ display:flex; justify-content:flex-end; gap:8px; margin-top:4px; }
+
+/* Resalta tarjeta al ir por ancla */
+.ubicacion:target{
+  outline:2px solid var(--accent);
+  box-shadow:0 0 0 4px rgba(78,168,222,.15);
+}
+
+/* Bloquear scroll del body con modal */
+body.is-modal-open{ overflow:hidden; }
+/* Evitar ligaduras que están metiendo dos puntos raros en algunos textos */
+.item__titulo,
+.ubicacion__titulo {
+  font-variant-ligatures: none;
+  font-feature-settings: "liga" 0, "clig" 0;
+}
+/* ===== Variables rápidas ===== */
+:root{
+  --topbar-h: 48px;                 /* alto de la barra superior */
+  --bg-900: #0b0e13;                /* fondo principal oscuro */
+  --bg-800: #10141b;                /* fondo barra de filtros */
+  --stroke: #1d2430;                /* bordes */
+  --text: #e6ebf3;                  /* texto */
+  --muted: #97a1b3;                 /* texto secundario */
+  --accent: #50b7ff;                /* acentos */
+  --primary: #00db7c;               /* CTA */
+}
+
+/* ===== Contenedor horizontal (centrado y con padding) ===== */
+.wrap{
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 12px;
+}
+
+/* ================= Topbar ================= */
+.topbar{
+  position: sticky;   /* se queda pegado arriba al hacer scroll */
+  top: 0;
+  z-index: 1000;
+  background: var(--bg-900);
+  border-bottom: 1px solid var(--stroke);
+  color: var(--text);
+}
+.topbar .wrap{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: var(--topbar-h);
+}
+
+/* Marca izquierda */
+.brand{
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: 0.3px;
+  color: var(--text);
+  text-decoration: none;
+}
+
+/* Botón “Iniciar sesión” (placeholder de auth) */
+.btn-ghost{
+  height: 32px;
+  padding: 0 12px;
+  border-radius: 999px;
+  border: 1px solid var(--stroke);
+  background: transparent;
+  color: var(--text);
+  cursor: pointer;
+}
+.btn-ghost:hover{ border-color: var(--muted); }
+
+/* ================= Toolbar (filtros) ================= */
+.toolbar{
+  position: sticky;           /* 2da barra también fija */
+  top: var(--topbar-h);       /* se “pega” por debajo de la topbar */
+  z-index: 950;
+  background: var(--bg-800);
+  border-bottom: 1px solid var(--stroke);
+  color: var(--text);
+}
+
+/* Línea de controles */
+.toolbar__wrap{
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 0;
+  overflow-x: auto;           /* si hay muchos controles, permite hacer scroll horizontal */
+}
+
+/* Controles base (look consistente) */
+.tool-control{
+  height: 36px;
+  padding: 0 10px;
+  border-radius: 10px;
+  border: 1px solid var(--stroke);
+  background: #0f131a;
+  color: var(--text);
+  outline: none;
+}
+.tool-control:focus{ border-color: var(--accent); }
+
+/* Campo de búsqueda más ancho */
+.tool-search{
+  min-width: 260px;
+  flex: 1 1 260px;
+}
+
+/* Chips/categorías contenedor (tu contenido existente) */
+.tool-chips{
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Botones de la toolbar */
+.tool-btn{
+  height: 36px;
+  padding: 0 12px;
+  border-radius: 10px;
+  border: 1px solid var(--stroke);
+  background: #0f131a;
+  color: var(--text);
+  cursor: pointer;
+  white-space: nowrap;
+}
+.tool-btn:hover{ border-color: var(--muted); }
+.tool-btn--primary{
+  background: linear-gradient(180deg, #00f08a, var(--primary));
+  color: #082313;
+  border: none;
+}
+
+/* Responsive: en pantallas muy chicas, hacemos wrap vertical */
+@media (max-width: 720px){
+  .toolbar__wrap{ flex-wrap: wrap; }
+}
+
+/* (Tip) Desactivar ligaduras para evitar “Zona L:enta” en algunas fuentes */
+body{
+  font-variant-ligatures: none;
+  font-feature-settings: "liga" 0, "clig" 0, "calt" 0, "dlig" 0;
+}
+/* Empuja el selector de día al extremo derecho de la toolbar */
+.tool-day {
+  margin-left: auto;  /* ocupa el espacio libre a la izquierda */
+  order: 99;          /* asegúrate de que quede después del resto */
+}
+#btnNuevo { order: 100; }
+/* Desactivar ligaduras en toda la app (evita "L:enta") */
+html, body, #app, .app, .toolbar, .topbar, .ubicacion, .item,
+input, select, button, textarea {
+  font-variant-ligatures: none !important;
+  font-feature-settings: "liga" 0, "clig" 0, "calt" 0, "dlig" 0 !important;
+}
+/* ===========================================================
+   SpotUy — styles.css (base + header/toolbar + lista + fixes)
+   * Sin Bootstrap
+   * Incluye fix de ligaduras ("L:enta") y zoom de Leaflet
+   =========================================================== */
+
+/* ---------- Variables del tema ---------- */
+:root{
+  --bg-900:#0b0e13;
+  --bg-800:#10141b;
+  --stroke:#1d2430;
+  --text:#e6ebf3;
+  --muted:#97a1b3;
+
+  /* colores de categorías */
+  --encuentro-comun:#e04b4b;
+  --encuentro-benefico:#36d399;
+  --encuentro-legal:#8b5cf6;
+  --foto:#3abff8;
+
+  --primary:#00db7c;
+  --accent:#50b7ff;
+}
+
+/* ---------- Base + fuente sin ligaduras (evita “L:enta”) ---------- */
+html, body, #app, .app, .topbar, .toolbar, .ubicacion, .item,
+.item__titulo, input, select, button, textarea {
+  font-variant-ligatures: none !important;
+  font-feature-settings: "liga" 0, "clig" 0, "calt" 0, "dlig" 0 !important;
+}
+body{
+  margin:0;
+  font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background: var(--bg-900);
+  color: var(--text);
+}
+
+/* Utilidad contenedora centrada */
+.wrap{ max-width:1280px; margin:0 auto; padding:0 12px; }
+
+/* ---------- Topbar (marca + login) ---------- */
+.topbar{
+  position: sticky; top:0; z-index:1000;
+  background:var(--bg-900);
+  border-bottom:1px solid var(--stroke);
+}
+.topbar .wrap{
+  display:flex; align-items:center; justify-content:space-between; height:48px;
+}
+.brand{ color:var(--text); text-decoration:none; font-weight:800; letter-spacing:.3px; }
+.btn-ghost{
+  height:32px; padding:0 12px; border-radius:999px; cursor:pointer;
+  border:1px solid var(--stroke); background:transparent; color:var(--text);
+}
+.btn-ghost:hover{ border-color:var(--muted); }
+
+/* ---------- Toolbar (filtros) ---------- */
+.toolbar{
+  position: sticky; top:48px; z-index:950;
+  background:var(--bg-800); border-bottom:1px solid var(--stroke);
+}
+.toolbar .wrap{ display:flex; align-items:center; gap:8px; padding:8px 12px; overflow-x:auto; }
+
+/* Controles uniformes */
+.tool-control{
+  height:36px; padding:0 10px; border-radius:10px;
+  border:1px solid var(--stroke); background:#0f131a; color:var(--text);
+}
+.tool-control:focus{ outline:none; border-color:var(--accent); }
+.tool-search{ min-width:260px; flex:1 1 260px; }
+
+/* Selector de día alineado a la derecha */
+.tool-day{ margin-left:auto; order:99; }
+
+/* Chips/categorías contenedor (si usas chips) */
+.tool-chips{ display:inline-flex; align-items:center; gap:6px; }
+
+/* Botones */
+.tool-btn{
+  height:36px; padding:0 12px; border-radius:10px; white-space:nowrap; cursor:pointer;
+  border:1px solid var(--stroke); background:#0f131a; color:var(--text);
+}
+.tool-btn:hover{ border-color:var(--muted); }
+.tool-btn--primary{ background:linear-gradient(180deg,#00f08a,var(--primary)); color:#082313; border:none; }
+
+/* ---------- Lista lateral (ubicaciones + items) ---------- */
+.ubicacion{
+  background:#0e131a; border:1px solid var(--stroke); border-radius:14px;
+  padding:12px; margin:10px 0;
+}
+.ubicacion__head{ display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
+.ubicacion__titulo{ font-weight:700; }
+.ubicacion__sub{ color:var(--muted); font-size:12px; }
+
+.item{
+  display:flex; justify-content:space-between; align-items:center;
+  padding:10px 8px; border:1px solid var(--stroke); border-radius:12px; margin-top:8px;
+}
+.item__main{ display:flex; flex-direction:column; gap:4px; }
+.item__fecha{ color:var(--muted); font-size:12px; }
+.item__titulo{ display:flex; align-items:center; gap:8px; font-size:15px; }
+.item__acciones{ display:flex; align-items:center; gap:8px; }
+
+/* Puntitos por categoría */
+.dot{ width:10px; height:10px; border-radius:50%; display:inline-block; }
+.dot--encuentro-comun{ background:var(--encuentro-comun); }
+.dot--encuentro-benefico{ background:var(--encuentro-benefico); }
+.dot--encuentro-legal{ background:var(--encuentro-legal); }
+.dot--foto{ background:var(--foto); }
+
+/* Badges */
+.badge{ display:inline-block; padding:2px 8px; border-radius:999px; font-size:12px; border:1px solid var(--stroke); }
+.badge--hoy{ background:#0f2e1f; border-color:#1a5e3f; }
+.badge--maniana{ background:#2e230f; border-color:#5e4a1a; }
+.badge--cancel{ background:#3b0f0f; border-color:#6a1e1e; }
+.badge--destacado{ background:#1a1433; border-color:#5b41d6; }
+
+/* Links */
+.link{ color:#8ecbff; text-decoration:none; }
+.link:hover{ text-decoration:underline; }
+
+/* Nota de popup */
+.nota{ color:var(--muted); font-size:12px; }
+
+/* ---------- Estado de “pick” en el mapa (cuando creas evento) ---------- */
+.mapa--pick{ cursor: crosshair; }
+
+/* ---------- Leaflet: margen del control de zoom abajo-derecha ---------- */
+.leaflet-bottom.leaflet-right{ margin:8px; }
+
+/* ---------- Responsive ---------- */
+@media (max-width:720px){
+  .toolbar .wrap{ flex-wrap:wrap; }
+}

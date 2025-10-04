@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>SpotUy — Eventos en Mapa</title>
+
+  <!-- Estilos propios -->
+  <link rel="stylesheet" href="css/styles.css">
+
+  <!-- Leaflet -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <script defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <!-- App -->
+  <script defer src="/js/app.js"></script>
+</head>
+<body>
+  <!-- ================= CABECERA ================= -->
+  <!-- ================= Topbar (marca + auth) ================= -->
+<header class="topbar">
+  <div class="wrap">
+    <!-- .brand: nombre del sitio a la izquierda -->
+    <a href="/" class="brand">SpotUy</a>
+
+    <!-- .auth: acciones de cuenta a la derecha (placeholder por ahora) -->
+    <div class="auth">
+      <!-- Más adelante: si hay sesión, mostrar avatar/menu; si no, este botón -->
+      <button id="btnLogin" class="btn-ghost">Iniciar sesión</button>
+    </div>
+  </div>
+</header>
+
+<!-- ================= Toolbar (filtros) ================= -->
+<nav class="toolbar">
+  <div class="wrap toolbar__wrap">
+    <!-- ⚠️ Pega aquí tus CONTROLES EXISTENTES manteniendo los MISMOS IDs -->
+    <!-- Ejemplos (usa tus propios select/input con mismos id): -->
+    <select id="selDiaMapa" class="tool-control tool-day" aria-label="Día en mapa">
+  <option value="hoy" selected>Mapa: Hoy</option>
+  <option value="maniana">Mapa: Mañana</option>
+</select>
+
+    <select id="selDepto" class="tool-control"><option value="todos">Todos los departamentos</option></select>
+    <input  id="txtBuscar" class="tool-control tool-search" placeholder="Filtrar lista por ubicación o evento">
+
+    <!-- chips de categorías (usa tu contenedor actual con el mismo id) -->
+    <div id="chipsCats" class="tool-chips">
+      <!-- botones/chips existentes -->
+    </div>
+
+    <!-- botón de cancelados (usa tu mismo id) -->
+    <button id="btnCancelados" class="tool-btn">Lista: incluir cancelados (OFF)</button>
+
+    <!-- botón nuevo evento (mismo id que ya usas) -->
+    <button id="btnNuevo" class="tool-btn tool-btn--primary">+ Nuevo evento</button>
+  </div>
+</nav>
+
+
+  <!-- ================= LAYOUT ================= -->
+  <main class="layout">
+    <aside class="panel">
+      <!-- Sponsor eliminado según pedido -->
+
+      <!-- Leyenda -->
+      <section class="bloque">
+        <div class="bloque__titulo">Leyenda</div>
+        <div class="legend">
+          <!-- Subcategorías de ENCUENTRO -->
+          <span><span class="dot dot--encuentro-comun"></span>Encuentro común</span>
+          <span><span class="dot dot--encuentro-benefico"></span>Encuentro benéfico</span>
+          <span><span class="dot dot--encuentro-legal"></span>Evento legal/grande</span>
+          <!-- Categoría FOTO -->
+          <span><span class="dot dot--foto"></span>Foto (barridos)</span>
+        </div>
+        <p class="nota">
+          El mapa muestra solo el evento del día seleccionado por ubicación (hoy o mañana).
+          La lista muestra próximos (hoy y futuro) por ubicación.
+        </p>
+      </section>
+
+      <div id="listaUbicaciones"></div>
+    </aside>
+
+    <section class="mapa" id="mapa"></section>
+  </main>
+
+  <!-- Tip flotante en modo selección -->
+  <div class="tip" id="pickTip" hidden>Click en el mapa para elegir la ubicación del evento.</div>
+
+  <!-- ===== Modal “Nuevo evento” ===== -->
+  <div class="modal" id="modalNuevo" aria-hidden="true">
+    <div class="modal__backdrop" id="modalBackdrop"></div>
+    <div class="modal__card" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <h3 class="modal__title" id="modalTitle">Nuevo evento</h3>
+
+      <form id="formNuevo" class="form">
+        <div class="form__row">
+          <label class="label">Nombre del lugar *</label>
+          <input class="input" id="lugarNombre" required />
+        </div>
+
+        <div class="form__row form__two">
+          <div>
+            <label class="label">Departamento *</label>
+            <select class="select" id="lugarDepto" required>
+              <option value="" disabled selected>Seleccioná</option>
+            </select>
+          </div>
+          <div>
+            <label class="label">Barrio / Zona</label>
+            <input class="input" id="lugarBarrio" placeholder="Opcional" />
+          </div>
+        </div>
+
+        <div class="form__row form__two">
+          <div>
+            <label class="label">Categoría *</label>
+            <select class="select" id="evCat" required>
+              <option value="encuentro">Encuentro</option>
+              <option value="foto">Foto (barridos)</option>
+            </select>
+          </div>
+          <div id="rowSubcat">
+            <label class="label">Subcategoría *</label>
+            <select class="select" id="evSubcat">
+              <option value="comun">Encuentro común</option>
+              <option value="benefico">Encuentro benéfico</option>
+              <option value="legal">Evento legal/grande</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form__row form__two">
+          <div>
+            <label class="label">Título del evento *</label>
+            <input class="input" id="evTitulo" required />
+          </div>
+          <div>
+            <label class="label">Fecha y hora *</label>
+            <div class="form__two">
+              <input class="input" type="date" id="evFecha" required />
+              <input class="input" type="time" id="evHora" required />
+            </div>
+          </div>
+        </div>
+
+        <div class="form__row">
+          <label class="label">Enlace (IG/Web)</label>
+          <input class="input" type="url" id="evLink" placeholder="https://..." />
+        </div>
+
+        <div class="form__row">
+          <label class="label">Descripción</label>
+          <textarea class="input" id="evDesc" rows="3" placeholder="Opcional"></textarea>
+        </div>
+
+        <div class="form__row form__two">
+          <label class="check"><input type="checkbox" id="evDestacado"> <span>Destacado</span></label>
+          <label class="check"><input type="checkbox" id="evCancelado"> <span>Cancelado</span></label>
+        </div>
+
+        <div class="form__row form__two">
+          <div>
+            <label class="label">Latitud</label>
+            <input class="input" id="evLat" readonly />
+          </div>
+          <div>
+            <label class="label">Longitud</label>
+            <input class="input" id="evLng" readonly />
+          </div>
+        </div>
+
+        <div class="form__actions">
+          <button type="button" class="btn" id="btnCancelar">Cancelar</button>
+          <button type="submit" class="btn btn--primary">Guardar evento</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</body>
+</html>
