@@ -2,9 +2,10 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>SpotUy — Eventos en Mapa</title>
 
-  <!-- Estilos propios -->
+  <!-- Estilos -->
   <link rel="stylesheet" href="css/styles.css">
 
   <!-- Leaflet -->
@@ -15,80 +16,61 @@
   <script defer src="/js/app.js"></script>
 </head>
 <body>
-  <!-- ================= CABECERA ================= -->
-  <!-- ================= Topbar (marca + auth) ================= -->
-<header class="topbar">
-  <div class="wrap">
-    <!-- .brand: nombre del sitio a la izquierda -->
-    <a href="/" class="brand">SpotUy</a>
-
-    <!-- .auth: acciones de cuenta a la derecha (placeholder por ahora) -->
-    <div class="auth">
-      <!-- Más adelante: si hay sesión, mostrar avatar/menu; si no, este botón -->
-      <button id="btnLogin" class="btn-ghost">Iniciar sesión</button>
+  <!-- Topbar -->
+  <header class="topbar">
+    <div class="wrap">
+      <a href="/" class="brand">SpotUy</a>
+      <div class="auth"><button id="btnLogin" class="btn-ghost">Iniciar sesión</button></div>
     </div>
-  </div>
-</header>
+  </header>
 
-<!-- ================= Toolbar (filtros) ================= -->
-<nav class="toolbar">
-  <div class="wrap toolbar__wrap">
-    <!-- ⚠️ Pega aquí tus CONTROLES EXISTENTES manteniendo los MISMOS IDs -->
-    <!-- Ejemplos (usa tus propios select/input con mismos id): -->
-    <select id="selDiaMapa" class="tool-control tool-day" aria-label="Día en mapa">
-  <option value="hoy" selected>Mapa: Hoy</option>
-  <option value="maniana">Mapa: Mañana</option>
-</select>
+  <!-- Toolbar -->
+  <nav class="toolbar">
+    <div class="wrap toolbar__wrap">
+      <select id="selDiaMapa" class="tool-control tool-day" aria-label="Día en mapa">
+        <option value="hoy" selected>Mapa: Hoy</option>
+        <option value="maniana">Mapa: Mañana</option>
+      </select>
 
-    <select id="selDepto" class="tool-control"><option value="todos">Todos los departamentos</option></select>
-    <input  id="txtBuscar" class="tool-control tool-search" placeholder="Filtrar lista por ubicación o evento">
+      <select id="selDepto" class="tool-control">
+        <option value="todos">Todos los departamentos</option>
+      </select>
 
-    <!-- chips de categorías (usa tu contenedor actual con el mismo id) -->
-    <div id="chipsCats" class="tool-chips">
-      <!-- botones/chips existentes -->
+      <input id="txtBuscar" class="tool-control tool-search" placeholder="Filtrar lista por ubicación o evento">
+
+      <div id="chipsCats" class="tool-chips"></div>
+
+      <button id="btnCancelados" class="tool-btn">Lista: incluir cancelados (OFF)</button>
+      <button id="btnNuevo" class="tool-btn tool-btn--primary">+ Nuevo evento</button>
     </div>
+  </nav>
 
-    <!-- botón de cancelados (usa tu mismo id) -->
-    <button id="btnCancelados" class="tool-btn">Lista: incluir cancelados (OFF)</button>
-
-    <!-- botón nuevo evento (mismo id que ya usas) -->
-    <button id="btnNuevo" class="tool-btn tool-btn--primary">+ Nuevo evento</button>
-  </div>
-</nav>
-
-
-  <!-- ================= LAYOUT ================= -->
+  <!-- Layout -->
   <main class="layout">
     <aside class="panel">
-      <!-- Sponsor eliminado según pedido -->
-
-      <!-- Leyenda -->
       <section class="bloque">
         <div class="bloque__titulo">Leyenda</div>
         <div class="legend">
-          <!-- Subcategorías de ENCUENTRO -->
           <span><span class="dot dot--encuentro-comun"></span>Encuentro común</span>
           <span><span class="dot dot--encuentro-benefico"></span>Encuentro benéfico</span>
           <span><span class="dot dot--encuentro-legal"></span>Evento legal/grande</span>
-          <!-- Categoría FOTO -->
           <span><span class="dot dot--foto"></span>Foto (barridos)</span>
         </div>
-        <p class="nota">
-          El mapa muestra solo el evento del día seleccionado por ubicación (hoy o mañana).
-          La lista muestra próximos (hoy y futuro) por ubicación.
-        </p>
+        <p class="nota">El mapa muestra solo el evento del día seleccionado por ubicación (hoy o mañana).
+          La lista muestra próximos (hoy y futuro) por ubicación.</p>
       </section>
 
       <div id="listaUbicaciones"></div>
     </aside>
 
+    <!-- 👇 Como antes: el MAPA es este <section id="mapa" class="mapa"> -->
     <section class="mapa" id="mapa"></section>
   </main>
 
-  <!-- Tip flotante en modo selección -->
+  <!-- Tip flotante -->
   <div class="tip" id="pickTip" hidden>Click en el mapa para elegir la ubicación del evento.</div>
 
-  <!-- ===== Modal “Nuevo evento” ===== -->
+  <!-- Modal Nuevo evento -->
   <div class="modal" id="modalNuevo" aria-hidden="true">
     <div class="modal__backdrop" id="modalBackdrop"></div>
     <div class="modal__card" role="dialog" aria-modal="true" aria-labelledby="modalTitle">

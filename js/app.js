@@ -254,8 +254,15 @@ const markerByPlaceId=new Map();
 
 /* FIX: mover control de zoom y recalcular tamaño para que no tape la UI */
 map.zoomControl.setPosition('bottomright');
-setTimeout(()=> map.invalidateSize(), 0);
-window.addEventListener('resize', ()=> map.invalidateSize());
+setTimeout(() => map.invalidateSize(), 0);
+window.addEventListener('resize', () => map.invalidateSize());
+
+// recalc al cruzar el breakpoint móvil/desktop
+const mq = window.matchMedia('(max-width: 767px)');
+const fix = () => setTimeout(() => map.invalidateSize(), 0);
+mq.addEventListener?.('change', fix);
+mq.addListener?.(fix); // fallback
+
 
 const PIN_GRAY = '#94a3b8';
 
@@ -590,3 +597,48 @@ aplicarParams();
 
 /* Dev helper: limpiar storage */
 window.resetSpotUyData=()=>{ localStorage.removeItem(KEY); alert('Storage de SpotUy borrado. Recargá la página.'); };
+/* ============================================================
+   PATCH: Dashboard sin scroll global + mapa siempre ajustado
+   Pegar al FINAL de js/app.js
+   ============================================================ */
+(function spotUyNoScrollPatch(){
+  /* Lee alturas reales de topbar/toolbar y las pasa a CSS */
+  function setChromeHeights(){
+    const topbar  = document.querySelector('.topbar');
+    const toolbar = document.querySelector('.toolbar');
+    const th = topbar  ? topbar.offsetHeight  : 0;
+    const bh = toolbar ? toolbar.offsetHeight : 0;
+    document.documentElement.style.setProperty('--topbar-h',  th + 'px');
+    document.documentElement.style.setProperty('--toolbar-h', bh + 'px');
+  }
+
+  /* Recalcula alturas y avisa a Leaflet para que redibuje */
+  function refreshMapSize(){
+    setChromeHeights();
+
+    // Intenta encontrar el mapa (sea global o variable local)
+    let _map = null;
+    try { if (typeof map !== 'undefined' && map) _map = map; } catch(e){}
+    if (!_map && window.map) _map = window.map;
+
+    if (_map && _map.invalidateSize){
+      // Mueve el control de zoom (si no estaba ya) y recalcula tamaño
+      try { _map.zoomControl && _map.zoomControl.setPosition('bottomright'); } catch(e){}
+      setTimeout(() => _map.invalidateSize(), 0);
+    }
+  }
+
+  // Si el mapa está en variable local, exponelo globalmente (opcional)
+  try { if (typeof map !== 'undefined' && map && !window.map) window.map = map; } catch(e){}
+
+  // Recalcular en eventos clave
+  const mq = window.matchMedia('(max-width: 767px)');
+  window.addEventListener('load',              refreshMapSize);
+  window.addEventListener('resize',            refreshMapSize);
+  window.addEventListener('orientationchange', refreshMapSize);
+  mq.addEventListener?.('change',              refreshMapSize);
+  mq.addListener?.(refreshMapSize); // fallback navegadores viejos
+
+  // Por si este archivo se inyecta después del load
+  refreshMapSize();
+})();
